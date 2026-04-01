@@ -1,0 +1,8 @@
+# k6 binary
+tools/
+
+# Test results
+results/
+
+# IDE
+.idea/
