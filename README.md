@@ -22,9 +22,11 @@ performance-test/
 
 ## ⚡ Cách chạy
 
-### Chạy nhanh bằng PowerShell script
+Script `run.ps1` mặc định sẽ chạy file `tests/showtime-get.test.js` với kịch bản `smoke`. Bạn có thể chỉ định file script cụ thể bằng cờ `-TestFile`.
+
+### 1. Chạy cơ bản (Single API)
 ```powershell
-# Smoke test (mặc định - 1 user, 30s)
+# Smoke test (với file showtime-get.test.js)
 .\run.ps1
 
 # Load test (50 users, 3 phút)
@@ -32,9 +34,21 @@ performance-test/
 
 # Stress test (tăng dần 200 users)
 .\run.ps1 -Scenario stress
+```
 
-# Spike test (đột ngột 300 users)
-.\run.ps1 -Scenario spike
+### 2. Chạy Data-driven Test (Đọc từ CSV)
+```powershell
+# Load test với dữ liệu đọc từ data/showtimes.csv
+.\run.ps1 -TestFile tests/showtime-datadriven.test.js -Scenario load
+```
+
+### 3. Chạy theo luồng (User Flow Test)
+```powershell
+# Flow xem phim (1 user)
+.\run.ps1 -TestFile tests/showtime-flow.test.js
+
+# Flow đặt vé toàn diện (Stress test)
+.\run.ps1 -TestFile tests/booking-flow.test.js -Scenario stress
 ```
 
 ### Hoặc chạy trực tiếp bằng k6
@@ -71,15 +85,17 @@ docker-compose up -d
 
 ### Chạy test với Grafana Dashboard
 
+Chỉ cần thêm cờ `-Dashboard` vào cuối bất kỳ lệnh `run.ps1` nào:
+
 ```powershell
-# Smoke test + stream real-time vào Grafana
+# Mặc định + Grafana
 .\run.ps1 -Dashboard
 
-# Load test + Grafana dashboard
-.\run.ps1 -Scenario load -Dashboard
+# Data-driven Load test + Grafana
+.\run.ps1 -TestFile tests/showtime-datadriven.test.js -Scenario load -Dashboard
 
-# Stress test + Grafana dashboard
-.\run.ps1 -Scenario stress -Dashboard
+# Flow test + Grafana
+.\run.ps1 -TestFile tests/showtime-flow.test.js -Scenario load -Dashboard
 ```
 
 Sau khi chạy, mở browser: **http://localhost:3000/d/k6-perf-dashboard** để xem dashboard.
