@@ -1,0 +1,6 @@
+username,password,role
+user1@cinema.com,password123,customer
+user2@cinema.com,password123,customer
+user3@cinema.com,password123,customer
+admin@cinema.com,admin123,admin
+vip_user@cinema.com,vip123,vip
