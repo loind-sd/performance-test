@@ -7,7 +7,25 @@ param(
     [switch]$Dashboard
 )
 
-$k6Path = "$PSScriptRoot\tools\k6-v1.0.0-windows-amd64\k6.exe"
+$k6Version = "v1.0.0"
+$k6Dir = "$PSScriptRoot\tools\k6-$k6Version-windows-amd64"
+$k6Path = "$k6Dir\k6.exe"
+
+if (-not (Test-Path $k6Path)) {
+    Write-Host "k6 not found, downloading $k6Version..." -ForegroundColor Yellow
+    $url = "https://github.com/grafana/k6/releases/download/$k6Version/k6-$k6Version-windows-amd64.zip"
+    $zip = "$PSScriptRoot\tools\k6.zip"
+    New-Item -ItemType Directory -Force -Path "$PSScriptRoot\tools" | Out-Null
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing
+        Expand-Archive -Path $zip -DestinationPath "$PSScriptRoot\tools" -Force
+        Remove-Item $zip
+        Write-Host "k6 downloaded successfully." -ForegroundColor Green
+    } catch {
+        Write-Error "Failed to download k6: $_"
+        exit 1
+    }
+}
 
 if (-not (Test-Path $k6Path)) {
     Write-Error "k6 not found at: $k6Path"
