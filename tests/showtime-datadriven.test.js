@@ -2,14 +2,15 @@ import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { SharedArray } from 'k6/data';
 import { Trend, Counter, Rate, Gauge } from 'k6/metrics';
-import { BASE_URL, DEFAULT_HEADERS, READ_THRESHOLDS } from '../config.js';
+import { BASE_URL, makeAuthHeaders, READ_THRESHOLDS } from '../config.js';
+import { authenticate } from '../lib/auth.js';
 
 /**
  * ============================================================
  *  DATA-DRIVEN TEST + CUSTOM METRICS
  * ============================================================
  *
- *  Vấn đề với test cũ (showtime-get.test.js):
+ *  Vấn đề với test cũ (product-get.test.js):
  *    → Hardcode showtimeId = 5
  *    → Mọi VU đều gọi cùng 1 endpoint → không realistic
  *    → Không biết API nhanh/chậm khác nhau theo data nào
@@ -157,7 +158,12 @@ export const options = {
 // ============================================================
 //  4. MAIN TEST FUNCTION
 // ============================================================
-export default function () {
+export function setup() {
+    const { token } = authenticate();
+    return { token };
+}
+
+export default function (data) {
     // ─── DATA-DRIVEN: Lấy data cho iteration này ───
     //
     //  Có 3 cách phân bổ data cho VUs:
@@ -186,7 +192,7 @@ export default function () {
     //  ✍️ TAGS: gắn tag vào request → filter/group trên Grafana
     //  Ví dụ: xem metrics riêng cho từng movie, từng status, v.v.
     const res = http.get(url, {
-        headers: DEFAULT_HEADERS,
+        headers: makeAuthHeaders(data.token),
         tags: {
             endpoint: 'GET /api/showtime',             // nhóm theo endpoint
             showtime_id: String(showtimeId),            // filter theo ID

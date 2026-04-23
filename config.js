@@ -3,17 +3,27 @@
  * Thay đổi các giá trị ở đây thay vì sửa trực tiếp trong test script
  */
 
-export const BASE_URL = 'http://127.0.0.1:8080';
+export const BASE_URL = 'http://14.225.17.199:8888';
 
 // InfluxDB URL cho Grafana dashboard (k6 → InfluxDB → Grafana)
 export const INFLUXDB_URL = 'http://localhost:8086/k6';
 
-export const AUTH_TOKEN = 'eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiIyIiwiaXNzIjoiY2luZW1hLWF1dGgiLCJpYXQiOjE3NzUyMDg1MjYsImV4cCI6MTc3NzgwMDUyNn0.M4GO-eOeAXSCyQkZuiINC44QeOV0UapIWsABU7LDdYYcTXFThVW_MD3tKuBL8evO3BlDdD6nY7j9c3G2JvV0IKkRGuly39FMjLsj3IfPgYv9Eybz6eVd9F3-3_T_zPAJcPVpc3KyHKpj9MppiIssoVqJQn9m2_6SnntMue86zo9knFjEI_txjEwM2O8_zDgWldpp0vwIwUyCz6Q7lAQGJPP10NWhPTAWzbjpJJr3JY5dSPk-ye_IHOHUlUim_ahHnjnGzCXJUyEzQIC0ItCBt5fUcy4Wa9J2srtChwQ1m18VeT405P2xm6rloWDD14tNYUBZPhQaczXcGoyIvvBO_Q';
-
-export const DEFAULT_HEADERS = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${AUTH_TOKEN}`,
+// Auth config — token được lấy động qua setup() + lib/auth.js
+// Override bằng env vars: k6 run --env AUTH_USERNAME=... --env AUTH_PASSWORD=...
+export const AUTH_ENDPOINT = __ENV.AUTH_ENDPOINT || '/api/client/common/authenticate';
+export const AUTH_CREDENTIALS = {
+    username: __ENV.AUTH_USERNAME || 'demo',
+    password: __ENV.AUTH_PASSWORD || 'Epos@123',
+    companyId: __ENV.AUTH_COMPANY_ID || null,
 };
+
+// Tạo headers có Authorization từ token lấy được ở setup()
+export function makeAuthHeaders(token) {
+    return {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+    };
+}
 
 /**
  * Ngưỡng performance (thresholds)

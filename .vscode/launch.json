@@ -1,0 +1,59 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "k6: DEBUG file hiện tại (1 VU, http-debug)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "k6",
+            "runtimeArgs": [
+                "run",
+                "--vus", "1",
+                "--duration", "5s",
+                "--http-debug=full"
+            ],
+            "args": ["${file}"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "k6: smoke – showtime-get",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "k6",
+            "runtimeArgs": [
+                "run",
+                "--env", "SCENARIO=smoke"
+            ],
+            "args": ["${workspaceFolder}/tests/showtime-get.test.js"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "k6: smoke – showtime-flow",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "k6",
+            "runtimeArgs": [
+                "run",
+                "--env", "SCENARIO=smoke"
+            ],
+            "args": ["${workspaceFolder}/tests/showtime-flow.test.js"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "k6: smoke – booking-flow",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "k6",
+            "runtimeArgs": [
+                "run",
+                "--env", "SCENARIO=smoke"
+            ],
+            "args": ["${workspaceFolder}/tests/booking-flow.test.js"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}

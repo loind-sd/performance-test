@@ -6,3 +6,6 @@ results/
 
 # IDE
 .idea/
+
+# Credentials — không commit lên git
+.env

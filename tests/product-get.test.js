@@ -1,6 +1,7 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
-import {BASE_URL, DEFAULT_HEADERS, READ_THRESHOLDS, THRESHOLDS} from '../config.js';
+import { BASE_URL, makeAuthHeaders, READ_THRESHOLDS } from '../config.js';
+import { authenticate } from '../lib/auth.js';
 
 /**
  * Test: GET /api/showtime/{id}
@@ -11,7 +12,7 @@ import {BASE_URL, DEFAULT_HEADERS, READ_THRESHOLDS, THRESHOLDS} from '../config.
  * - Stress test: tăng dần lên 200 users → tìm điểm giới hạn
  * - Spike test:  đột ngột 300 users     → kiểm tra tải đột biến
  * 
- * Chạy từng scenario bằng: k6 run --env SCENARIO=smoke tests/showtime-get.test.js
+ * Chạy từng scenario bằng: k6 run --env SCENARIO=smoke tests/product-get.test.js
  */
 
 const scenarios = {
@@ -64,11 +65,14 @@ export const options = {
     thresholds: READ_THRESHOLDS,
 };
 
-export default function () {
-    const showtimeId = 5;
-    const url = `${BASE_URL}/api/showtime/${showtimeId}`;
+export function setup() {
+    const { token } = authenticate();
+    return { token };
+}
 
-    const res = http.get(url, { headers: DEFAULT_HEADERS });
+export default function (data) {
+    const url = `${BASE_URL}/api/client/page/product/category-get-with-paging?page=0&size=50&status=1&isCountAll=true&isCheck=true&isWebCall=true`;
+    const res = http.get(url, { headers: makeAuthHeaders(data.token) });
 
     // Kiểm tra kết quả
     check(res, {

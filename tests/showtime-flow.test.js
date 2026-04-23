@@ -1,7 +1,8 @@
 import http from 'k6/http';
 import { check, sleep, group } from 'k6';
 import { Trend, Counter } from 'k6/metrics';
-import { BASE_URL, DEFAULT_HEADERS, READ_THRESHOLDS } from '../config.js';
+import { BASE_URL, makeAuthHeaders, READ_THRESHOLDS } from '../config.js';
+import { authenticate } from '../lib/auth.js';
 
 /**
  * ============================================================
@@ -58,9 +59,15 @@ export const options = {
     }
 };
 
-export default function () {
+export function setup() {
+    const { token } = authenticate();
+    return { token };
+}
+
+export default function (data) {
     const flowStart = Date.now();
     let success = true;
+    const headers = makeAuthHeaders(data.token);
 
     // ID đang fix cứng như yêu cầu của bạn, thực tế có thể bốc random từ Bước 1
     const TARGET_SHOWTIME_ID = 5;
@@ -70,7 +77,7 @@ export default function () {
     // ──────────────────────────────
     group('01 - Get Showtime List', function () {
         const res = http.get(`${BASE_URL}/api/showtime`, {
-            headers: DEFAULT_HEADERS,
+            headers,
             tags: { step: 'list_showtimes' } // Tag để hiển thị tách biệt trên Grafana
         });
 
@@ -94,7 +101,7 @@ export default function () {
     // ──────────────────────────────
     group('02 - Get Showtime Detail', function () {
         const res = http.get(`${BASE_URL}/api/showtime/${TARGET_SHOWTIME_ID}`, {
-            headers: DEFAULT_HEADERS,
+            headers,
             tags: { step: 'showtime_detail' }
         });
 
@@ -114,7 +121,7 @@ export default function () {
     // ──────────────────────────────
     group('03 - Get Seat Map', function () {
         const res = http.get(`${BASE_URL}/api/showtime/seatMap/${TARGET_SHOWTIME_ID}`, {
-            headers: DEFAULT_HEADERS,
+            headers,
             tags: { step: 'seat_map' }
         });
 

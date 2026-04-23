@@ -2,7 +2,7 @@ param(
     [ValidateSet('smoke', 'load', 'stress', 'spike')]
     [string]$Scenario = 'smoke',
 
-    [string]$TestFile = 'tests/showtime-get.test.js',
+    [string]$TestFile = 'tests/product-get.test.js',
 
     [switch]$Dashboard
 )
@@ -30,6 +30,19 @@ if (-not (Test-Path $k6Path)) {
 if (-not (Test-Path $k6Path)) {
     Write-Error "k6 not found at: $k6Path"
     exit 1
+}
+
+# Đọc file .env nếu có (không bắt buộc)
+$envFile = "$PSScriptRoot\.env"
+if (Test-Path $envFile) {
+    Write-Host "Loading .env ..." -ForegroundColor DarkGray
+    Get-Content $envFile | ForEach-Object {
+        if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
+            $key   = $matches[1].Trim()
+            $value = $matches[2].Trim()
+            [System.Environment]::SetEnvironmentVariable($key, $value, 'Process')
+        }
+    }
 }
 
 # Tạo thư mục results nếu chưa có

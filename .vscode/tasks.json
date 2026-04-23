@@ -1,0 +1,113 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // ─── CHẠY NHANH (smoke) ───────────────────────────────────────────────
+        {
+            "label": "k6: smoke – showtime-get",
+            "type": "shell",
+            "command": "k6 run --env SCENARIO=smoke tests/showtime-get.test.js",
+            "group": { "kind": "build", "isDefault": true },
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "k6: smoke – showtime-flow",
+            "type": "shell",
+            "command": "k6 run --env SCENARIO=smoke tests/showtime-flow.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "k6: smoke – showtime-datadriven",
+            "type": "shell",
+            "command": "k6 run --env SCENARIO=smoke tests/showtime-datadriven.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "k6: smoke – booking-flow",
+            "type": "shell",
+            "command": "k6 run --env SCENARIO=smoke tests/booking-flow.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+
+        // ─── DEBUG (1 VU, verbose + http-debug) ──────────────────────────────
+        {
+            "label": "k6: DEBUG – file hiện tại (1 VU, 30s)",
+            "type": "shell",
+            "command": "k6 run --vus 1 --duration 5s --http-debug=full --verbose ${relativeFile}",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "k6: DEBUG – showtime-get (http-debug)",
+            "type": "shell",
+            "command": "k6 run --vus 1 --duration 5s --http-debug=full tests/showtime-get.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "k6: DEBUG – booking-flow (http-debug)",
+            "type": "shell",
+            "command": "k6 run --vus 1 --duration 30s --http-debug=full tests/booking-flow.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+
+        // ─── ORDER FLOW ───────────────────────────────────────────────────────
+        {
+            "label": "k6: smoke – order-flow",
+            "type": "shell",
+            "command": "k6 run --env SCENARIO=smoke tests/order-flow.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "k6: DEBUG – order-flow (http-debug)",
+            "type": "shell",
+            "command": "k6 run --vus 1 --duration 30s --http-debug=full tests/order-flow.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+
+        // ─── LOAD / STRESS ────────────────────────────────────────────────────
+        {
+            "label": "k6: load – showtime-get",
+            "type": "shell",
+            "command": "k6 run --env SCENARIO=load tests/showtime-get.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "k6: stress – showtime-get",
+            "type": "shell",
+            "command": "k6 run --env SCENARIO=stress tests/showtime-get.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+
+        // ─── CUSTOM CREDENTIALS ───────────────────────────────────────────────
+        {
+            "label": "k6: smoke – custom credentials",
+            "type": "shell",
+            "command": "k6 run --env SCENARIO=smoke --env AUTH_USERNAME=${input:username} --env AUTH_PASSWORD=${input:password} tests/showtime-get.test.js",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "username",
+            "type": "promptString",
+            "description": "Auth username",
+            "default": "user1@cinema.com"
+        },
+        {
+            "id": "password",
+            "type": "promptString",
+            "description": "Auth password",
+            "password": true,
+            "default": "password123"
+        }
+    ]
+}
