@@ -93,6 +93,36 @@
             "command": "k6 run --env SCENARIO=smoke --env AUTH_USERNAME=${input:username} --env AUTH_PASSWORD=${input:password} tests/showtime-get.test.js",
             "group": "build",
             "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+
+        // ─── XK6-SQL (test trực tiếp database) ────────────────────────────────
+        {
+            "label": "xk6-sql: build binary",
+            "type": "shell",
+            "command": ".\\setup-xk6.ps1",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "xk6-sql: smoke – sql-query",
+            "type": "shell",
+            "command": ".\\run-sql.ps1 -TestFile tests/sql-query.test.js -Scenario smoke",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "xk6-sql: load – sql-query",
+            "type": "shell",
+            "command": ".\\run-sql.ps1 -TestFile tests/sql-query.test.js -Scenario load",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
+        },
+        {
+            "label": "xk6-sql: stress – sql-query",
+            "type": "shell",
+            "command": ".\\run-sql.ps1 -TestFile tests/sql-query.test.js -Scenario stress",
+            "group": "build",
+            "presentation": { "reveal": "always", "panel": "dedicated", "clear": true }
         }
     ],
     "inputs": [
